@@ -1,11 +1,13 @@
 package com.tencent.neilchen.imageloader;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.icu.text.RelativeDateTimeFormatter;
 import android.util.Log;
 import android.util.LruCache;
 import android.widget.ImageView;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -22,51 +24,45 @@ public class ImageLoader {
 
   ExecutorService executorService =
       Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-  private LruCache<String, Bitmap> mImageCache;
 
-  public ImageLoader() {
-    initImageCache();
-  }
+  ImageCache imageCache = new ImageCache();
+  private Context context;
 
-  private void initImageCache() {
+  public void displayImage(final Context context, final String url, final ImageView imageView) {
+    this.context = context;
 
-    //计算最大可使用的内存
-    long maxMemory = Runtime.getRuntime().maxMemory();
-    //使用四分之一作为缓存
-    int cacheSize = (int) (maxMemory / 4);
+    final Bitmap bitmap = imageCache.get(url);
+    if (bitmap != null) {
+      imageView.setImageBitmap(bitmap);
+      return;
+    }
 
-    mImageCache = new LruCache<String, Bitmap>(cacheSize) {
-      @Override protected int sizeOf(String string, Bitmap bitmap) {
-        return bitmap.getRowBytes() * bitmap.getHeight() / 1024;
-      }
-    };
-  }
-
-  public void displayImage(final String url, final ImageView imageView) {
     imageView.setTag(url);
     executorService.submit(new Runnable() {
       @Override public void run() {
-        Log.i("diaplay", Thread.currentThread().getName());
 
         final Bitmap bitmap = downloadImage(url);
-        if (bitmap == null){
+
+        //final Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher);
+        if (bitmap == null) {
           return;
         }
-        if (imageView.getTag().equals(url)){
-
+        if (imageView.getTag().equals(url)) {
+          int byteCount = bitmap.getByteCount();
+          Log.i("bitmap.getByteCount()", byteCount + "");
+          //存缓存
+          imageCache.put(url, bitmap);
           imageView.post(new Runnable() {
             @Override public void run() {
               imageView.setImageBitmap(bitmap);
             }
           });
         }
-
-        mImageCache.put(url,bitmap);
       }
     });
   }
 
-  public Bitmap downloadImage(String imageUrl){
+  public Bitmap downloadImage(String imageUrl) {
     try {
       URL url = new URL(imageUrl);
       HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
