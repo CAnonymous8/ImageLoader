@@ -17,6 +17,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     findViewById(R.id.tvIl).setOnClickListener(this);
     imageView = (ImageView) findViewById(R.id.iv);
     imageLoader = new ImageLoader();
+    //使用sdcard
+    imageLoader.useDiskCache(true);
+    //使用内存
+//    imageLoader.useDiskCache(false);
   }
 
   /**

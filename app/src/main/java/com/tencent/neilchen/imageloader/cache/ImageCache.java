@@ -1,4 +1,4 @@
-package com.tencent.neilchen.imageloader;
+package com.tencent.neilchen.imageloader.cache;
 
 import android.graphics.Bitmap;
 import android.util.Log;

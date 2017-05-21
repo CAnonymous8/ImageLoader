@@ -3,16 +3,15 @@ package com.tencent.neilchen.imageloader;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.icu.text.RelativeDateTimeFormatter;
-import android.util.Log;
-import android.util.LruCache;
 import android.widget.ImageView;
-import java.io.ByteArrayOutputStream;
+
+import com.tencent.neilchen.imageloader.cache.DiskCache;
+import com.tencent.neilchen.imageloader.cache.ImageCache;
+
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -25,16 +24,20 @@ public class ImageLoader {
   ExecutorService executorService =
       Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
+  //内存缓存
   ImageCache imageCache = new ImageCache();
+  //sdcard缓存
+  DiskCache diskCache = new DiskCache();
+  //是否使用sdcard缓存
+  private boolean isUseDiskCache = false;
   private Context context;
 
   public void displayImage(final Context context, final String url, final ImageView imageView) {
     this.context = context;
 
-    final Bitmap bitmap = imageCache.get(url);
-    if (bitmap != null) {
-      imageView.setImageBitmap(bitmap);
-      return;
+    Bitmap bmp = isUseDiskCache ? diskCache.get(url) : imageCache.get(url);
+    if (bmp != null){
+      imageView.setImageBitmap(bmp);
     }
 
     imageView.setTag(url);
@@ -46,8 +49,9 @@ public class ImageLoader {
           return;
         }
         if (imageView.getTag().equals(url)) {
-          //存缓存
+          //存缓存,sdcard
           imageCache.put(url, bitmap);
+          diskCache.put(url,bitmap);
           imageView.post(new Runnable() {
             @Override public void run() {
               imageView.setImageBitmap(bitmap);
@@ -58,6 +62,18 @@ public class ImageLoader {
     });
   }
 
+  /**
+   * 是否使用sdcard缓存
+   * @param useDiskCache
+   */
+  public void useDiskCache(boolean useDiskCache){
+    isUseDiskCache = useDiskCache;
+  }
+  /**
+   * 下载图片
+   * @param imageUrl
+   * @return
+   */
   public Bitmap downloadImage(String imageUrl) {
     try {
       URL url = new URL(imageUrl);
