@@ -30,13 +30,12 @@ public class ImageCache {
     };
   }
 
-  public boolean put(String key, Bitmap bitmap) {
+  public void put(String key, Bitmap bitmap) {
     Bitmap bitmapValue = get(key);
     if (bitmapValue == null) {
       if (mImageCache != null && bitmap != null)
         bitmapValue = mImageCache.put(key, bitmap);
     }
-    return bitmapValue == bitmap;
   }
 
   public Bitmap get(String key) {

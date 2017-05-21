@@ -40,16 +40,12 @@ public class ImageLoader {
     imageView.setTag(url);
     executorService.submit(new Runnable() {
       @Override public void run() {
-
         final Bitmap bitmap = downloadImage(url);
 
-        //final Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher);
         if (bitmap == null) {
           return;
         }
         if (imageView.getTag().equals(url)) {
-          int byteCount = bitmap.getByteCount();
-          Log.i("bitmap.getByteCount()", byteCount + "");
           //存缓存
           imageCache.put(url, bitmap);
           imageView.post(new Runnable() {

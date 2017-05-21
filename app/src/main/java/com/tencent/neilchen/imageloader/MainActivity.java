@@ -9,12 +9,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
   String imageurl = "http://pic55.nipic.com/file/20141208/19462408_171130083000_2.jpg";
   private ImageView imageView;
+  private ImageLoader imageLoader;
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
     findViewById(R.id.tvIl).setOnClickListener(this);
     imageView = (ImageView) findViewById(R.id.iv);
+    imageLoader = new ImageLoader();
   }
 
   /**
@@ -25,7 +27,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
   @Override public void onClick(View v) {
     switch (v.getId()){
       case R.id.tvIl :
-        new ImageLoader().displayImage(getApplicationContext(),imageurl,imageView);
+        imageLoader.displayImage(getApplicationContext(),imageurl,imageView);
         break;
     }
   }
