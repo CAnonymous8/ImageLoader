@@ -35,9 +35,10 @@ public class ImageLoader {
   public void displayImage(final Context context, final String url, final ImageView imageView) {
     this.context = context;
 
-    Bitmap bmp = isUseDiskCache ? diskCache.get(url) : imageCache.get(url);
+    Bitmap bmp = isUseDiskCache ? diskCache.get(url.replace("/","")) : imageCache.get(url);
     if (bmp != null){
       imageView.setImageBitmap(bmp);
+      return;
     }
 
     imageView.setTag(url);
@@ -51,7 +52,7 @@ public class ImageLoader {
         if (imageView.getTag().equals(url)) {
           //存缓存,sdcard
           imageCache.put(url, bitmap);
-          diskCache.put(url,bitmap);
+          diskCache.put(url.replace("/",""),bitmap);
           imageView.post(new Runnable() {
             @Override public void run() {
               imageView.setImageBitmap(bitmap);

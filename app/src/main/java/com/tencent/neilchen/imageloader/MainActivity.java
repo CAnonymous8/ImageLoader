@@ -4,6 +4,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
+import java.io.File;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -21,6 +22,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     imageLoader.useDiskCache(true);
     //使用内存
 //    imageLoader.useDiskCache(false);
+
   }
 
   /**
@@ -31,6 +33,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
   @Override public void onClick(View v) {
     switch (v.getId()){
       case R.id.tvIl :
+
         imageLoader.displayImage(getApplicationContext(),imageurl,imageView);
         break;
     }

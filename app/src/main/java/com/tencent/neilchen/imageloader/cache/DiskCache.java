@@ -13,7 +13,7 @@ import java.io.IOException;
 
 public class DiskCache {
 
-    String cacheDir = "sdcard/cache/";
+    String cacheDir = "/data/data/com.tencent.neilchen.imageloader/cache/";
 
     /**
      *
